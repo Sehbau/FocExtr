@@ -3,12 +3,12 @@
 % 
 % cf dirsForLevels.m
 %
-function [] = u_DirsLevelsDel(pth, nLev)
+function [] = u_DirsLevelsDel(pth, nLev, bOSisWin)
 
     for l = 1:nLev
         
         files = [pth '/Lev' num2str(l), '/*.*'];
-        files = u_FipaSlashToBack(files);
+        files = u_PathToBackSlash( files, bOSisWin );
 
         dos(['del ' files]);
 
