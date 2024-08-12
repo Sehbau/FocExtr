@@ -14,9 +14,15 @@ if nargin==5, pthProg = pthFocx; end
 
 %dscf(end) = 'b';                        % .vef -> .veb
 
-cmd  	= [pthProg 'focxhL ' dscf ' ' bboxStr ' ' outf ' ' Opts];
+cmnd  	= [pthProg 'focxhL ' dscf ' ' bboxStr ' ' outf ' ' Opts];
 
-[Sts Out] = dos(cmd);                   % excecute program
+[status Out] = dos(cmnd);                   % excecute program
+
+%% ------  Status  ------
+if status>0
+    Out
+    warning('Command %s returns exit code > 0 (see Out above)', cmnd);
+end
 
 %% -----   Analyse StdOut  -----
 ixLev    = strfind(Out, 'nLevFoc');

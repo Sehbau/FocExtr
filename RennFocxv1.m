@@ -1,36 +1,46 @@
 %
 % Wrapper routine for program focxv1
 %
-% IN    dscf    vector file name + path (must include extension '.vec')
+% sa RennDscx.m
+%
+% IN    pthDsc  vector file path (must include extension '.vec')
 %       Bbox    bounding box as array of numbers [top/bot/lef/rit]
-%       outf    output file name + path
-%       Opts    options
-%       pthFocx path of program 'focx'
+%       pthOut  output file path
+%       Admin   administration, u_CmndAdmin.m
 %
 % OUT   Sz      struct with nLev, ntDsc
 %       Out     stdout
 % 
-function [Sz Out] = RennFocx(dscf, Bbox, outf, Opts, pthFocx)
+function [Sz Out] = RennFocxv1( pthDsc, Bbox, pthOut, Admin )
 
+% create bounding box as string
 bboxStr   = sprintf('%d %d %d %d', Bbox(1), Bbox(2), Bbox(3), Bbox(4));
 
-pthProg = '';
-if nargin==3, Opts=''; end
-if nargin==5, pthProg = pthFocx; end
+if nargin==3, 
+    Admin.pthProg = ''; 
+    Admin.optS    = '';
+end
 
-cmd  	= [pthProg 'focxv1 ' dscf ' ' bboxStr ' ' outf ' ' Opts];
+cmnd = [Admin.pthProg 'focxv1 ' pthDsc ' ' bboxStr ' ' pthOut ' ' Admin.optS ];
 
-[Sts Out] = dos(cmd);                   % excecute program
+[status Out] = dos(cmnd);                   % excecute program
+
+%% ------  Status  ------
+if status>0
+    Out
+    warning('Command %s returns exit code > 0 (see Out above)', cmnd);
+end
 
 %% -----   Analyse StdOut  -----
-ixLev    = strfind(Out, 'nLevFoc');
-Sz.nLev  = str2num(Out(ixLev+8));
-ixDsc    = strfind(Out, 'ntDsc');
-Sz.ntDsc = sscanf(Out(ixDsc+5:end), '%d', 1); %str2num(Out(ixDsc+6));
+ixLev    = strfind( Out, 'nLevFoc');
+Sz.nLev  = str2num( Out(ixLev+8));
+ixDsc    = strfind( Out, 'ntDsc');
+Sz.ntDsc = sscanf(  Out(ixDsc+5:end), '%d', 1); %str2num(Out(ixDsc+6));
 
 %% ------  Verify Proper Termination  -----
 ixEOP = strfind(Out,'EndOfProgram');
 if isempty(ixEOP)
+    warning('Command %s not executed. See sz and Out below', cmnd);
     Sz
     Out
     fprintf('Paused');

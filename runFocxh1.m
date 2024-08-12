@@ -5,6 +5,8 @@
 % To be run from PROD/FocExtr/
 % 
 clear;
+run('../UtilMb/globalsSB');
+cd( PthProg.focExtr );
 strVec    = 'img1';
 %strVec    = 'aachen';
 
@@ -19,17 +21,20 @@ Bbox      = [300 500 200 350];  % rechts unten
 bboxStr     = sprintf('%d %d %d %d', Bbox(1), Bbox(2), Bbox(3), Bbox(4));
 
 %% =========   Command   ========
-dscf        = ['Desc/' strVec '.vec'];
-outf        = ['Focii\' strVec];        % output file name (win backslash!)
+pthDsc      = ['Desc/' strVec '.vec'];
+pthOut      = ['Focii/' strVec];        % output file name (win backslash!)
 
-cmd      	= ['focxh1 ' dscf ' ' bboxStr ' ' outf];
+pthOut        = u_PathToBackSlash(pthOut); % slash to backslash for windows
+
+cmd      	= ['focxh1 ' pthDsc ' ' bboxStr ' ' pthOut];
 [Sts Out]	= dos(cmd);
 
 %% ---------   Load Hist File   -------
-addpath('UtilMb/');
-addpath('../DescExtr/UtilMb/Hist/'); % loading routines from repo DescExtr
+% requires:
+% addpath('UtilMb/');
+% addpath('../DescExtr/UtilMb/Hist/'); % loading routines from repo DescExtr
 
-[HFU HFB Nunf Nbif Floc]  = LoadFocHist([outf '.hsf1']);    
+[HFU HFB Nunf Nbif Floc]  = LoadFocHist([pthOut '.hsf1']);    
 [H1 len]    = u_HistCatFlat(HFU, HFB, Nunf, Nbif, Floc);
 
 %% --------   Plot Flat Univariate   ---------
